@@ -13,4 +13,5 @@ __pycache__/
 
 # Metadados de IDEs (Cloud9/VSCode)
 .vscode/
-.c9/
+.c9/.idea/
+*.log
