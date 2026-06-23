@@ -1,0 +1,7 @@
+data/input/dataset-json-pagamentos/
+data/input/datasets-csv-pedidos/
+.venv/
+__pycache__/
+*.pyc
+data/output/
+dataeng-pyspark-poo.log
