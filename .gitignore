@@ -1,16 +1,7 @@
-# Ambiente Virtual do Python
-# Substitua "venv/" se seu ambiente tiver outro nome
-venv/
+data/input/dataset-json-pagamentos/
+data/input/datasets-csv-pedidos/
 .venv/
-
-# Arquivos de cache do Python
 __pycache__/
 *.pyc
-
-# Arquivos de ambiente (que podem conter senhas)
-.env
-.env.*
-
-# Metadados de IDEs (Cloud9/VSCode)
-.vscode/
-.c9/
+data/output/
+dataeng-pyspark-poo.log
