@@ -57,7 +57,7 @@ Clone o repositório:
 
 ```bash
 git clone https://github.com/gabrielratao/fiap-analise-pagamentos.git
-cd DataProgramming
+cd fiap-analise-pagamentos
 ```
 
 Crie e ative o ambiente virtual:
