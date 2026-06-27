@@ -29,6 +29,8 @@ def main():
     app_name = config["spark"]["app_name"]
     logger.info(f"Obtido o app name: {app_name}")
 
+    spark = None
+
     try:
         spark = SparkSessionManager.get_spark_session(app_name=app_name)
         data_handler = DataHandler(spark)
@@ -41,7 +43,7 @@ def main():
         # Aqui poderíamos adicionar envio de notificação (Slack, Email, PagerDuty)
 
     finally:
-        if spark:
+        if spark is not None:
             spark.stop()
             logging.info("Sessão Spark finalizada.")
 

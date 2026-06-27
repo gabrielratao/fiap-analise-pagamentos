@@ -45,6 +45,6 @@ class Transformation:
             logger.info("Relatório gerado com sucesso.")
             return relatorio_df
 
-        except Exception as error:
+        except Exception:
             logger.exception("Erro ao gerar relatório de pedidos recusados legítimos.")
-            raise error
+            raise
