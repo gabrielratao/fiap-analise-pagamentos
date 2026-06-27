@@ -1,2 +1,0 @@
-[console_scripts]
-run-data-pipeline = main:main
