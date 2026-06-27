@@ -46,15 +46,12 @@ class Pipeline:
             path=path_pedidos,
             compression=compression_pedidos,
             header=header_pedidos,
-            sep=separator_pedidos
+            sep=separator_pedidos,
         )
 
         logger.info("Gerando relatório final")
 
-        relatorio_df = self.transformer.gerar_relatorio(
-            pedidos_df,
-            pagamentos_df
-        )
+        relatorio_df = self.transformer.gerar_relatorio(pedidos_df, pagamentos_df)
 
         relatorio_df.show(20, truncate=False)
 
@@ -62,9 +59,6 @@ class Pipeline:
 
         path_output = config["paths"]["output"]
 
-        self.data_handler.write_parquet(
-            df=relatorio_df,
-            path=path_output
-        )
+        self.data_handler.write_parquet(df=relatorio_df, path=path_output)
 
         logger.info("Pipeline concluído com sucesso!")
