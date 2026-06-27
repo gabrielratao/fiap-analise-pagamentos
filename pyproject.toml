@@ -33,7 +33,6 @@ run-data-pipeline = "main:main"
 package-dir = {"" = "src"}
 packages = {find = {where = ["src"]}}
 
-# pyproject.toml (adicione ao final)
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
