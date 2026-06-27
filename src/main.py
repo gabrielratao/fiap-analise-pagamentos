@@ -1,5 +1,5 @@
 # src/main.py
-from config.settings import carregar_config
+from config.settings import Settings
 from session.spark_session import SparkSessionManager
 from io_utils.data_handler import DataHandler
 from processing.transformations import Transformation
@@ -24,11 +24,10 @@ def configurar_logging():
 def main():
     logger = logging.getLogger(__name__)
 
-    config = carregar_config()
+    settings = Settings()
+    config = settings.carregar_config()
     app_name = config["spark"]["app_name"]
     logger.info(f"Obtido o app name: {app_name}")
-
-    spark = SparkSessionManager.get_spark_session(app_name=app_name)
 
     try:
         spark = SparkSessionManager.get_spark_session(app_name=app_name)

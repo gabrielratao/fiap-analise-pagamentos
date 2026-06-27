@@ -5,3 +5,6 @@ __pycache__/
 *.pyc
 data/output/
 dataeng-pyspark-poo.log
+dist/
+.coverage
+*.egg-info/
