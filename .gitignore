@@ -1,7 +1,3 @@
-# Datasets
-data/input/dataset-json-pagamentos/
-data/input/datasets-csv-pedidos/
-
 # Ambiente virtual
 .venv/
 
