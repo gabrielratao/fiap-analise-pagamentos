@@ -1,8 +1,33 @@
+# Datasets
 data/input/dataset-json-pagamentos/
 data/input/datasets-csv-pedidos/
+
+# Ambiente virtual
 .venv/
+
+# Cache do Python
 __pycache__/
-*.pyc
+*.py[cod]
+
+# Arquivos de saída
 data/output/
-dataeng-pyspark-poo.log
+
+# Logs
+*.log
+
+# Cobertura de testes
+.coverage
+.pytest_cache/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
 .idea/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

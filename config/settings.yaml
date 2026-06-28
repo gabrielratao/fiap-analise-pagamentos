@@ -1,4 +1,4 @@
-# src/config/settings.yaml
+# config/settings.yaml
 spark:
   app_name: "RelatorioPedidosRecusadosLegitimos"
 
