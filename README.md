@@ -125,7 +125,7 @@ Após realizar o download, mantenha os arquivos nos caminhos configurados no arq
 As configurações da aplicação estão centralizadas no arquivo:
 
 ```
-src/config/settings.yaml
+config/settings.yaml
 ```
 
 Neste arquivo são definidos:
