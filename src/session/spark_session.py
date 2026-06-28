@@ -1,13 +1,16 @@
 # src/session/spark_session.py
 from pyspark.sql import SparkSession
 
+
 class SparkSessionManager:
     """
     Gerencia a criação e o acesso à sessão Spark.
     """
 
     @staticmethod
-    def get_spark_session(app_name: str = "RelatorioPedidosRecusadosLegitimos") -> SparkSession:
+    def get_spark_session(
+        app_name: str = "RelatorioPedidosRecusadosLegitimos",
+    ) -> SparkSession:
         """
         Cria e retorna uma sessão Spark.
 
