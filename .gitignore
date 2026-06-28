@@ -1,9 +1,6 @@
-# Ambiente Virtual do Python
-# Substitua "venv/" se seu ambiente tiver outro nome
-venv/
+data/input/dataset-json-pagamentos/
+data/input/datasets-csv-pedidos/
 .venv/
-
-# Arquivos de cache do Python
 __pycache__/
 *.pyc
 
@@ -15,3 +12,6 @@ __pycache__/
 .vscode/
 .c9/.idea/
 *.log
+
+data/output/
+dataeng-pyspark-poo.log
