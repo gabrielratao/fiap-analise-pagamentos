@@ -8,7 +8,7 @@ import logging
 
 
 def configurar_logging():
-    """Configura o logging para todo o projeto."""
+    """Configuração para níveis de logs usado em todo o projeto"""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -40,7 +40,6 @@ def main():
 
     except Exception as e:
         logging.error(f"FALHA CRÍTICA NO PIPELINE: {e}")
-        # Aqui poderíamos adicionar envio de notificação (Slack, Email, PagerDuty)
 
     finally:
         if spark is not None:

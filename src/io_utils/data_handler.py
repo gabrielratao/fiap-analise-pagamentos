@@ -65,8 +65,6 @@ class DataHandler:
         schema = self._get_schema_pagamentos()
         return self.spark.read.option("compression", "gzip").json(path, schema=schema)
 
-    # src/io_utils/data_handler.py
-    # ...
     def load_pedidos(
         self, path: str, compression: str, header: bool, sep: str
     ) -> DataFrame:
