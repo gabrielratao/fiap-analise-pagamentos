@@ -1,6 +1,9 @@
 # tests/unit/test_transformations.py
 
 from datetime import datetime
+
+import pytest
+from pyspark.sql.utils import AnalysisException
 from pyspark.sql.types import (
     BooleanType,
     FloatType,
@@ -45,6 +48,18 @@ SCHEMA_PAGAMENTOS = StructType(
             ),
             True,
         ),
+    ]
+)
+
+# Schema de pagamentos sem o campo "avaliacao_fraude", usado para simular
+# uma fonte de dados inválida/incompleta no teste de tratamento de erro.
+SCHEMA_PAGAMENTOS_SEM_AVALIACAO_FRAUDE = StructType(
+    [
+        StructField("id_pedido", StringType(), True),
+        StructField("forma_pagamento", StringType(), True),
+        StructField("valor_pagamento", FloatType(), True),
+        StructField("status", BooleanType(), True),
+        StructField("data_processamento", TimestampType(), True),
     ]
 )
 
@@ -129,6 +144,131 @@ class TestGerarRelatorio:
 
         ids = [r.id_pedido for r in resultado.collect()]
         assert ids == ["p1"]
+
+    def test_pagamento_com_status_nulo_e_excluido(self, spark):
+        """
+        status=null não deve ser tratado como recusado: ~F.col(null) resulta em
+        null, e o filtro descarta a linha. Este teste documenta esse comportamento.
+        """
+        pedidos = spark.createDataFrame(
+            [
+                ("p1", "TV", 100.0, 2, datetime(2025, 1, 10, 10, 0, 0), "SP", 1),
+            ],
+            SCHEMA_PEDIDOS,
+        )
+
+        pagamentos = spark.createDataFrame(
+            [
+                (
+                    "p1",
+                    "cartao",
+                    200.0,
+                    None,
+                    datetime(2025, 1, 10, 11, 0, 0),
+                    (False, 0.1),
+                ),
+            ],
+            SCHEMA_PAGAMENTOS,
+        )
+
+        resultado = Transformation().gerar_relatorio(pedidos, pagamentos)
+
+        assert resultado.count() == 0
+
+    def test_pagamento_com_fraude_nula_e_excluido(self, spark):
+        """
+        fraude=null também é descartado pelo mesmo motivo de status=null:
+        ~F.col(null) não é considerado False pelo filtro do Spark.
+        """
+        pedidos = spark.createDataFrame(
+            [
+                ("p1", "TV", 100.0, 2, datetime(2025, 1, 10, 10, 0, 0), "SP", 1),
+            ],
+            SCHEMA_PEDIDOS,
+        )
+
+        pagamentos = spark.createDataFrame(
+            [
+                (
+                    "p1",
+                    "cartao",
+                    200.0,
+                    False,
+                    datetime(2025, 1, 10, 11, 0, 0),
+                    (None, 0.1),
+                ),
+            ],
+            SCHEMA_PAGAMENTOS,
+        )
+
+        resultado = Transformation().gerar_relatorio(pedidos, pagamentos)
+
+        assert resultado.count() == 0
+
+    def test_pedido_com_multiplos_pagamentos_recusados_gera_multiplas_linhas(
+        self, spark
+    ):
+        """
+        Quando um pedido tem mais de uma tentativa de pagamento recusada e
+        legítima, o join produz uma linha por tentativa (fan-out). Este teste
+        trava esse comportamento para evitar regressões silenciosas.
+        """
+        pedidos = spark.createDataFrame(
+            [
+                ("p1", "TV", 50.0, 1, datetime(2025, 1, 11, 10, 0, 0), "RJ", 1),
+            ],
+            SCHEMA_PEDIDOS,
+        )
+
+        pagamentos = spark.createDataFrame(
+            [
+                (
+                    "p1",
+                    "pix",
+                    50.0,
+                    False,
+                    datetime(2025, 1, 11, 11, 0, 0),
+                    (False, 0.2),
+                ),
+                (
+                    "p1",
+                    "boleto",
+                    50.0,
+                    False,
+                    datetime(2025, 1, 11, 12, 0, 0),
+                    (False, 0.3),
+                ),
+            ],
+            SCHEMA_PAGAMENTOS,
+        )
+
+        resultado = Transformation().gerar_relatorio(pedidos, pagamentos)
+
+        formas_pagamento = sorted(r.forma_pagamento for r in resultado.collect())
+        assert formas_pagamento == ["boleto", "pix"]
+
+    def test_lanca_excecao_quando_pagamentos_sem_avaliacao_fraude(self, spark):
+        """
+        A classe deve propagar o erro (try/except + logging) quando o
+        DataFrame de pagamentos não contém a coluna esperada avaliacao_fraude,
+        em vez de falhar silenciosamente.
+        """
+        pedidos = spark.createDataFrame(
+            [
+                ("p1", "TV", 100.0, 2, datetime(2025, 1, 10, 10, 0, 0), "SP", 1),
+            ],
+            SCHEMA_PEDIDOS,
+        )
+
+        pagamentos_invalidos = spark.createDataFrame(
+            [
+                ("p1", "cartao", 200.0, False, datetime(2025, 1, 10, 11, 0, 0)),
+            ],
+            SCHEMA_PAGAMENTOS_SEM_AVALIACAO_FRAUDE,
+        )
+
+        with pytest.raises(AnalysisException):
+            Transformation().gerar_relatorio(pedidos, pagamentos_invalidos)
 
     def test_filtra_apenas_pedidos_de_2025(self, spark):
         """Pedidos fora de 2025 não devem aparecer no relatório."""
